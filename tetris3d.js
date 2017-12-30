@@ -113,7 +113,7 @@ function shouldFreeze(tetrisBoard, blocks) {
 
 function freeze(tetrisBoard) {
     var blocks = getBlocks(tetrisBoard)
-    if (shouldFreeze(tetrisBoard,blocks)) {
+    if (shouldFreeze(tetrisBoard, blocks)) {
         blocks.forEach(function (block) {
             setBlock(tetrisBoard, block, STATE.FILLED)
         })
