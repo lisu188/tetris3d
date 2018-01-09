@@ -29,7 +29,7 @@
     initializeScene();
 
     let tetrisBoard = new TetrisBoard(12, 12, 12);
-    tetrisBoard.addBlock([5, 5, 10], 0);
+    tetrisBoard.addBlock(new Point(5, 5, 10), 0);
 
     setInterval(function () {
         tetrisBoard.advance();
@@ -77,14 +77,14 @@
         tetrisBoard.getRawBlocks().forEach(function (blockDef) {
             blockDef.forEach(function (block) {
                 const cubeMesh = new THREE.Mesh(cubeGeometry, blockMaterial);
-                cubeMesh.position.set(block[0], block[2], block[1]);
+                cubeMesh.position.set(block.x, block.z, block.y);
                 scene.add(cubeMesh);
             })
         });
 
         tetrisBoard.getFilled().forEach(function (block) {
             const cubeMesh = new THREE.Mesh(cubeGeometry, filledMaterial);
-            cubeMesh.position.set(block[0], block[2], block[1]);
+            cubeMesh.position.set(block.x, block.z, block.y);
             scene.add(cubeMesh);
         });
 

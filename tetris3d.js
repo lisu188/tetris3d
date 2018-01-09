@@ -9,22 +9,31 @@ Array.prototype.removeIf = function (callback) {
     }
 };
 
+
+class Point {
+    constructor(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    plus(other) {
+        return new Point(this.x + other.x, this.y + other.y, this.z + other.z)
+    }
+}
+
 const BLOCKS = [
     [
-        [0, 0, 0],
-        [0, 0, 1],
-        [0, 1, 0],
-        [0, 1, 1],
-        [1, 0, 0],
-        [1, 0, 1],
-        [1, 1, 0],
-        [1, 1, 1]
+        new Point(0, 0, 0),
+        new Point(0, 0, 1),
+        new Point(0, 1, 0),
+        new Point(0, 1, 1),
+        new Point(1, 0, 0),
+        new Point(1, 0, 1),
+        new Point(1, 1, 0),
+        new Point(1, 1, 1)
     ]
 ];
-
-function sumPos(loc1, loc2) {
-    return [loc1[0] + loc2[0], loc1[1] + loc2[1], loc1[2] + loc2[2]]
-}
 
 class Block {
     constructor(loc, id) {
@@ -36,10 +45,12 @@ class Block {
         self = this;
         let rawPoints = [];
         BLOCKS[this.id].forEach(function (point) {
-            rawPoints.push(sumPos(self.loc, point))
+            rawPoints.push(self.loc.plus(point))
         });
         return rawPoints
     }
+
+
 }
 
 class TetrisBoard {
@@ -81,7 +92,7 @@ class TetrisBoard {
             for (let j = 0; j < this.y; j++) {
                 for (let k = 0; k < this.z; k++) {
                     if (this.board[i][j][k] === state) {
-                        coords.push([i, j, k])
+                        coords.push(new Point(i, j, k))
                     }
                 }
             }
@@ -98,9 +109,9 @@ class TetrisBoard {
     }
 
     getLowestBlock(blockDef) {
-        let lowest = [Infinity, Infinity, Infinity];
+        let lowest = new Point(Infinity, Infinity, Infinity);
         blockDef.forEach(function (block) {
-            if (block[2] < lowest[2]) {
+            if (block.z < lowest.z) {
                 lowest = block;
             }
         });
@@ -113,11 +124,11 @@ class TetrisBoard {
 
     setBlock(loc, state) {
         //TODO: add validation and loggin
-        this.board[loc[0]][loc[1]][loc[2]] = state;
+        this.board[loc.x][loc.y][loc.z] = state;
     }
 
     getBlock(loc) {
-        return this.board[loc[0]][loc[1]][loc[2]];
+        return this.board[loc.x][loc.y][loc.z];
     }
 
     addBlock(loc, blockId) {
@@ -126,7 +137,7 @@ class TetrisBoard {
 
     shouldFreeze(blockDef) {
         const lowestBlock = this.getLowestBlock(blockDef);
-        return lowestBlock[2] === 0 || this.getBlock(sumPos(lowestBlock, [0, 0, -1])) === STATE.FILLED;
+        return lowestBlock.z === 0 || this.getBlock(lowestBlock.plus(new Point(0, 0, -1))) === STATE.FILLED;
     }
 
     freeze() {
@@ -143,9 +154,8 @@ class TetrisBoard {
 
 //TODO: make sure block freeze is done after
     advance() {
-        let self = this;
         this.blocks.forEach(function (block) {
-            block.loc = sumPos(block.loc, [0, 0, -1]);
+            block.loc = block.loc.plus(new Point(0, 0, -1));
         });
         this.freeze();
     }
