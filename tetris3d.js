@@ -1,5 +1,13 @@
 var STATE = Object.freeze({EMPTY: 0, FILLED: 1, BLOCK: 2});
 
+Array.prototype.removeIf = function (callback) {
+    let i = this.length;
+    while (i--) {
+        if (callback(this[i], i)) {
+            this.splice(i, 1);
+        }
+    }
+};
 
 const BLOCKS = [
     [
@@ -18,12 +26,29 @@ function sumPos(loc1, loc2) {
     return [loc1[0] + loc2[0], loc1[1] + loc2[1], loc1[2] + loc2[2]]
 }
 
+class Block {
+    constructor(loc, id) {
+        this.loc = loc;
+        this.id = id;
+    }
+
+    getRawPoints() {
+        self = this;
+        let rawPoints = [];
+        BLOCKS[this.id].forEach(function (point) {
+            rawPoints.push(sumPos(self.loc, point))
+        });
+        return rawPoints
+    }
+}
+
 class TetrisBoard {
     constructor(x, y, z) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.buildBoard(x, y, z);
+        this.blocks = []
     }
 
     buildBoard(x, y, z) {
@@ -64,13 +89,17 @@ class TetrisBoard {
         return coords
     }
 
-    getBlocks() {
-        return this.getWithState(STATE.BLOCK);
+    getRawBlocks() {
+        let ret = [];
+        this.blocks.forEach(function (block) {
+            ret.push(block.getRawPoints());
+        });
+        return ret
     }
 
-    getLowestBlock() {
+    getLowestBlock(blockDef) {
         let lowest = [Infinity, Infinity, Infinity];
-        this.getBlocks().forEach(function (block) {
+        blockDef.forEach(function (block) {
             if (block[2] < lowest[2]) {
                 lowest = block;
             }
@@ -91,36 +120,32 @@ class TetrisBoard {
         return this.board[loc[0]][loc[1]][loc[2]];
     }
 
-
     addBlock(loc, blockId) {
-        self = this;
-        BLOCKS[blockId].forEach(function (point) {
-            self.setBlock(sumPos(loc, point), STATE.BLOCK);
-        });
+        this.blocks.push(new Block(loc, blockId))
     }
 
-    shouldFreeze() {
-        const lowestBlock = this.getLowestBlock();
+    shouldFreeze(blockDef) {
+        const lowestBlock = this.getLowestBlock(blockDef);
         return lowestBlock[2] === 0 || this.getBlock(sumPos(lowestBlock, [0, 0, -1])) === STATE.FILLED;
     }
 
     freeze() {
-        const blocks = this.getBlocks();
-        if (this.shouldFreeze(blocks)) {
-            blocks.forEach(function (block) {
-                this.setBlock(block, STATE.FILLED)
-            })
-        }
+        let self = this;
+        this.blocks.removeIf(function (block) {
+            if (self.shouldFreeze(block.getRawPoints())) {
+                block.getRawPoints().forEach(function (block) {
+                    self.setBlock(block, STATE.FILLED)
+                });
+                return true;
+            }
+        });
     }
 
 //TODO: make sure block freeze is done after
     advance() {
-        self = this;
-        this.getBlocks().map(function (currentBlock) {
-            self.setBlock(currentBlock, STATE.EMPTY);
-            return sumPos(currentBlock, [0, 0, -1])
-        }).forEach(function (currentBlock) {
-            self.setBlock(currentBlock, STATE.BLOCK)
+        let self = this;
+        this.blocks.forEach(function (block) {
+            block.loc = sumPos(block.loc, [0, 0, -1]);
         });
         this.freeze();
     }

@@ -11,19 +11,18 @@
         }
     </style>
     <script src="./three.js"></script>
-    <script src="./OrbitControls.js"></script>
     <script src="./tetris3d.js"></script>
 </head>
 <body>
 <div id="WebGLCanvas"></div>
 <script>
     // Global scene object
-    var scene;
+    let scene;
 
     // Global camera object
-    var camera;
+    let camera;
 
-    var renderer;
+    let renderer;
 
 
     // Initialize the scene
@@ -43,8 +42,8 @@
         renderer = new THREE.WebGLRenderer({antialias: true});
         renderer.setClearColor(0x000000, 1);
 
-        var canvasWidth = window.innerWidth;
-        var canvasHeight = window.innerHeight;
+        const canvasWidth = window.innerWidth;
+        const canvasHeight = window.innerHeight;
 
         renderer.setSize(canvasWidth, canvasHeight);
 
@@ -55,7 +54,6 @@
         camera = new THREE.PerspectiveCamera(45, canvasWidth / canvasHeight, 1, 100);
         camera.position.set(25, 25, 25);
         camera.lookAt(scene.position);
-
 
         scene.add(camera);
 
@@ -76,14 +74,15 @@
 
         scene.add(camera);
 
-
-        tetrisBoard.getBlocks(tetrisBoard).forEach(function (block) {
-            const cubeMesh = new THREE.Mesh(cubeGeometry, blockMaterial);
-            cubeMesh.position.set(block[0], block[2], block[1]);
-            scene.add(cubeMesh);
+        tetrisBoard.getRawBlocks().forEach(function (blockDef) {
+            blockDef.forEach(function (block) {
+                const cubeMesh = new THREE.Mesh(cubeGeometry, blockMaterial);
+                cubeMesh.position.set(block[0], block[2], block[1]);
+                scene.add(cubeMesh);
+            })
         });
 
-        tetrisBoard.getFilled(tetrisBoard).forEach(function (block) {
+        tetrisBoard.getFilled().forEach(function (block) {
             const cubeMesh = new THREE.Mesh(cubeGeometry, filledMaterial);
             cubeMesh.position.set(block[0], block[2], block[1]);
             scene.add(cubeMesh);
@@ -96,7 +95,6 @@
                 scene.add(cubeMesh);
             }
         }
-
 
         renderer.render(scene, camera);
     }
