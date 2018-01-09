@@ -10,6 +10,9 @@ Array.prototype.removeIf = function (callback) {
 };
 
 
+function rand(x, y) {
+    return Math.floor((Math.random() * y) + x);
+}
 class Point {
     constructor(x, y, z) {
         this.x = x;
@@ -158,8 +161,14 @@ class TetrisBoard {
             block.loc = block.loc.plus(new Point(0, 0, -1));
         });
         this.freeze();
+        if (this.blocks.length === 0) {
+            this.nextBlock()
+        }
     }
 
+    nextBlock() {
+        this.addBlock(new Point(rand(this.x / 2 - this.x / 4, this.x / 2 + this.x / 4), rand(this.y / 2 - this.y / 4, this.y / 2 + this.y / 4), this.z), rand(0, BLOCKS.length))
+    }
 }
 
 //TODO: use this

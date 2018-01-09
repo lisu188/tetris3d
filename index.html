@@ -29,12 +29,11 @@
     initializeScene();
 
     let tetrisBoard = new TetrisBoard(12, 12, 12);
-    tetrisBoard.addBlock(new Point(5, 5, 10), 0);
 
     setInterval(function () {
         tetrisBoard.advance();
         render();
-    }, 100);
+    }, 1000);
 
     render();
 
@@ -57,11 +56,16 @@
 
         scene.add(camera);
 
+        let light = new THREE.PointLight(0xFFFFFF, 1, 100000);
+        light.position.set(50, 50, 50);
+        scene.add(light);
+
+
         cubeGeometry = new THREE.BoxBufferGeometry(1, 1, 1);
 
         blockMaterial = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true});
         filledMaterial = new THREE.MeshBasicMaterial({color: 0x0000ff, wireframe: true});
-        floorMaterial = new THREE.MeshBasicMaterial({color: 0x00ff00})
+        floorMaterial = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true})
     }
 
 
