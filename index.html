@@ -28,12 +28,12 @@
     // Initialize the scene
     initializeScene();
 
-    let tetrisBoard = new TetrisBoard(12, 12, 12);
+    let tetrisBoard = new TetrisBoard(50, 50, 50);
 
     setInterval(function () {
         tetrisBoard.advance();
         render();
-    }, 1000);
+    }, 100);
 
     render();
 
@@ -48,10 +48,28 @@
 
         document.getElementById("WebGLCanvas").appendChild(renderer.domElement);
 
+        document.addEventListener("keypress", function (event) {
+            switch (String.fromCharCode(event.which || event.keyCode)) {
+                case 'w':
+                    tetrisBoard.move(0, 1);
+                    break;
+                case 's':
+                    tetrisBoard.move(0, -1);
+                    break;
+                case 'a':
+                    tetrisBoard.move(-1, 0);
+                    break;
+                case 'd':
+                    tetrisBoard.move(1, 0);
+                    break;
+            }
+            render()
+        });
+
         scene = new THREE.Scene();
 
         camera = new THREE.PerspectiveCamera(45, canvasWidth / canvasHeight, 1, 100);
-        camera.position.set(25, 25, 25);
+        camera.position.set(70, 25, 65);
         camera.lookAt(scene.position);
 
         scene.add(camera);

@@ -1,4 +1,7 @@
 var STATE = Object.freeze({EMPTY: 0, FILLED: 1, BLOCK: 2});
+//TODO: cast shadow of block on board
+//TODO: fix block falling of the edge
+//TODO: make indicators which direction is key bound
 
 Array.prototype.removeIf = function (callback) {
     let i = this.length;
@@ -11,8 +14,9 @@ Array.prototype.removeIf = function (callback) {
 
 
 function rand(x, y) {
-    return Math.floor((Math.random() * y) + x);
+    return Math.floor((Math.random() * (y - x)) + x);
 }
+
 class Point {
     constructor(x, y, z) {
         this.x = x;
@@ -76,6 +80,13 @@ class TetrisBoard {
                 }
             }
         }
+    }
+
+    move(x, y) {
+        //TODO: move only lowest block
+        this.blocks.forEach(function (block) {
+            block.loc = block.loc.plus(new Point(x, y, 0))
+        })
     }
 
     isBottomFilled() {
