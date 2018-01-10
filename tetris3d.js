@@ -1,4 +1,5 @@
-var STATE = Object.freeze({EMPTY: 0, FILLED: 1, BLOCK: 2});
+const STATE = Object.freeze({EMPTY: 0, FILLED: 1});
+
 //TODO: cast shadow of block on board
 //TODO: fix block falling of the edge
 //TODO: make indicators which direction is key bound
