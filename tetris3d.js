@@ -234,18 +234,36 @@ class TetrisBoard {
             block.loc = block.loc.plus(new Point(0, 0, -1));
         });
         this.freeze();
+        while (this.isBottomFilled()) {
+            this.clearBottom()
+        }
         if (this.blocks.length === 0) {
             this.nextBlock()
         }
     }
 
     nextBlock() {
-        let block = new Block(new Point(rand(this.x / 2 - this.x / 4, this.x / 2 + this.x / 4), rand(this.y / 2 - this.y / 4, this.y / 2 + this.y / 4), this.z - 1), rand(0, BLOCKS.length));
+        let block = new Block(new Point(rand(this.x / 2 - this.x / 4, this.x / 2 + this.x / 4),
+            rand(this.y / 2 - this.y / 4, this.y / 2 + this.y / 4), this.z - 1),
+            rand(0, BLOCKS.length));
         let blockSize = block.getSize();
         block.move(new Point(0, 0, -blockSize.z));
         if (this.isInBounds(block)) {
             this.addBlock(block)
         }
+    }
+
+    clearBottom() {
+        for (let z = 0; z < this.z - 1; z++) {
+            for (let x = 0; x < this.x; x++)
+                for (let y = 0; y < this.y; y++) {
+                    this.board[x][y][z] = this.board[x][y][z + 1];
+                }
+        }
+        for (let x = 0; x < this.x; x++)
+            for (let y = 0; y < this.y; y++) {
+                this.board[x][y][this.z - 1] = STATE.EMPTY;
+            }
     }
 }
 

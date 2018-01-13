@@ -28,12 +28,12 @@
     // Initialize the scene
     initializeScene();
 
-    let tetrisBoard = new TetrisBoard(2, 2, 25);
+    let tetrisBoard = new TetrisBoard(2, 2, 10);
 
     setInterval(function () {
         tetrisBoard.advance();
         render();
-    }, 100);
+    }, 1000);
 
     render();
 
