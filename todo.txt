@@ -1,2 +1,2 @@
-TODO: shadow of block on plane
-TODO: visualize controls
+//TODO: cast shadow of block on board
+//TODO: make indicators which direction is key bound

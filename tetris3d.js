@@ -1,9 +1,5 @@
 const STATE = Object.freeze({EMPTY: 0, FILLED: 1});
 
-//TODO: cast shadow of block on board
-//TODO: fix block falling of the edge
-//TODO: make indicators which direction is key bound
-
 Array.prototype.removeIf = function (callback) {
     let i = this.length;
     while (i--) {
@@ -195,7 +191,6 @@ class TetrisBoard {
     }
 
     setBlock(loc, state) {
-        //TODO: add validation and loggin
         this.board[loc.x][loc.y][loc.z] = state;
     }
 
@@ -224,7 +219,6 @@ class TetrisBoard {
         });
     }
 
-//TODO: make sure block freeze is done after
     advance() {
         this.blocks.forEach(function (block) {
             block.loc = block.loc.plus(new Point(0, 0, -1));
@@ -253,7 +247,4 @@ class TetrisBoard {
 //     return arr;
 // }
 
-
-//TODO: make checking for more lines
-//TODO: make sure that at this stage all blocks are frozen
 
