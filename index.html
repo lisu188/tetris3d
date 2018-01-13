@@ -51,16 +51,16 @@
         document.addEventListener("keypress", function (event) {
             switch (String.fromCharCode(event.which || event.keyCode)) {
                 case 'w':
-                    tetrisBoard.move(0, 1);
+                    tetrisBoard.move(0, 1, 0);
                     break;
                 case 's':
-                    tetrisBoard.move(0, -1);
+                    tetrisBoard.move(0, -1, 0);
                     break;
                 case 'a':
-                    tetrisBoard.move(-1, 0);
+                    tetrisBoard.move(-1, 0, 0);
                     break;
                 case 'd':
-                    tetrisBoard.move(1, 0);
+                    tetrisBoard.move(1, 0, 0);
                     break;
             }
             render()

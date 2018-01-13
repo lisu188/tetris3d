@@ -28,6 +28,14 @@ class Point {
     plus(other) {
         return new Point(this.x + other.x, this.y + other.y, this.z + other.z)
     }
+
+    isAnyLower(point) {
+        return this.x < point.x || this.y < point.y || this.z < point.z;
+    }
+
+    isAnyHigher(point) {
+        return this.x >= point.x || this.y >= point.y || this.z >= point.z;
+    }
 }
 
 const BLOCKS = [
@@ -58,7 +66,13 @@ class Block {
         return rawPoints
     }
 
+    getMoved(loc) {
+        return new Block(this.loc.plus(loc), this.id);
+    }
 
+    move(loc) {
+        this.loc = this.loc.plus(loc);
+    }
 }
 
 class TetrisBoard {
@@ -83,11 +97,26 @@ class TetrisBoard {
         }
     }
 
-    move(x, y) {
+    move(x, y, z) {
+        self = this;
+        let moveDir = new Point(x, y, z);
         //TODO: move only lowest block
         this.blocks.forEach(function (block) {
-            block.loc = block.loc.plus(new Point(x, y, 0))
+            if (self.isInBounds(block.getMoved(moveDir))) {
+                block.move(moveDir);
+            }
         })
+    }
+
+    isInBounds(block) {
+        let bounds = this.getBounds(block);
+        let anyLower = bounds.low.isAnyLower(new Point(0, 0, 0));
+        let anyHigher = bounds.high.isAnyHigher(this.getSize());
+        return !anyLower && !anyHigher;
+    }
+
+    getSize() {
+        return new Point(this.x, this.y, this.z);
     }
 
     isBottomFilled() {
@@ -121,6 +150,34 @@ class TetrisBoard {
             ret.push(block.getRawPoints());
         });
         return ret
+    }
+
+    getBounds(block) {
+        let lowest = new Point(Infinity, Infinity, Infinity);
+        let highest = new Point(-Infinity, -Infinity, -Infinity);
+        block.getRawPoints().forEach(function (block) {
+            if (block.x < lowest.x) {
+                lowest = block;
+            }
+            if (block.y < lowest.y) {
+                lowest = block;
+            }
+            if (block.z < lowest.z) {
+                lowest = block;
+            }
+            if (block.x > highest.x) {
+                highest = block;
+            }
+            if (block.y > highest.y) {
+                highest = block;
+            }
+            if (block.z > highest.z) {
+                highest = block;
+            }
+        });
+        return {
+            low: lowest, high: highest
+        }
     }
 
     getLowestBlock(blockDef) {
