@@ -53,7 +53,7 @@ class Block {
         this.id = id;
     }
 
-    getRawPoints() {
+    getPoints() {
         self = this;
         let rawPoints = [];
         BLOCKS[this.id].forEach(function (point) {
@@ -62,12 +62,49 @@ class Block {
         return rawPoints
     }
 
+    getSize() {
+        return this.getBoundsInternal(BLOCKS[this.id]).high
+    }
+
     getMoved(loc) {
         return new Block(this.loc.plus(loc), this.id);
     }
 
     move(loc) {
         this.loc = this.loc.plus(loc);
+    }
+
+
+    getBounds() {
+        return this.getBoundsInternal(this.getPoints());
+    }
+
+    getBoundsInternal(points) {
+        let lowest = new Point(Infinity, Infinity, Infinity);
+        let highest = new Point(-Infinity, -Infinity, -Infinity);
+        points.forEach(function (block) {
+            if (block.x < lowest.x) {
+                lowest = block;
+            }
+            if (block.y < lowest.y) {
+                lowest = block;
+            }
+            if (block.z < lowest.z) {
+                lowest = block;
+            }
+            if (block.x > highest.x) {
+                highest = block;
+            }
+            if (block.y > highest.y) {
+                highest = block;
+            }
+            if (block.z > highest.z) {
+                highest = block;
+            }
+        });
+        return {
+            low: lowest, high: highest
+        }
     }
 }
 
@@ -105,7 +142,7 @@ class TetrisBoard {
     }
 
     isInBounds(block) {
-        let bounds = this.getBounds(block);
+        let bounds = block.getBounds();
         let anyLower = bounds.low.isAnyLower(new Point(0, 0, 0));
         let anyHigher = bounds.high.isAnyHigher(this.getSize());
         return !anyLower && !anyHigher;
@@ -143,38 +180,11 @@ class TetrisBoard {
     getRawBlocks() {
         let ret = [];
         this.blocks.forEach(function (block) {
-            ret.push(block.getRawPoints());
+            ret.push(block.getPoints());
         });
         return ret
     }
 
-    getBounds(block) {
-        let lowest = new Point(Infinity, Infinity, Infinity);
-        let highest = new Point(-Infinity, -Infinity, -Infinity);
-        block.getRawPoints().forEach(function (block) {
-            if (block.x < lowest.x) {
-                lowest = block;
-            }
-            if (block.y < lowest.y) {
-                lowest = block;
-            }
-            if (block.z < lowest.z) {
-                lowest = block;
-            }
-            if (block.x > highest.x) {
-                highest = block;
-            }
-            if (block.y > highest.y) {
-                highest = block;
-            }
-            if (block.z > highest.z) {
-                highest = block;
-            }
-        });
-        return {
-            low: lowest, high: highest
-        }
-    }
 
     getLowestBlock(blockDef) {
         let lowest = new Point(Infinity, Infinity, Infinity);
@@ -198,8 +208,8 @@ class TetrisBoard {
         return this.board[loc.x][loc.y][loc.z];
     }
 
-    addBlock(loc, blockId) {
-        this.blocks.push(new Block(loc, blockId))
+    addBlock(block) {
+        this.blocks.push(block)
     }
 
     shouldFreeze(blockDef) {
@@ -210,8 +220,8 @@ class TetrisBoard {
     freeze() {
         let self = this;
         this.blocks.removeIf(function (block) {
-            if (self.shouldFreeze(block.getRawPoints())) {
-                block.getRawPoints().forEach(function (block) {
+            if (self.shouldFreeze(block.getPoints())) {
+                block.getPoints().forEach(function (block) {
                     self.setBlock(block, STATE.FILLED)
                 });
                 return true;
@@ -230,7 +240,12 @@ class TetrisBoard {
     }
 
     nextBlock() {
-        this.addBlock(new Point(rand(this.x / 2 - this.x / 4, this.x / 2 + this.x / 4), rand(this.y / 2 - this.y / 4, this.y / 2 + this.y / 4), this.z), rand(0, BLOCKS.length))
+        let block = new Block(new Point(rand(this.x / 2 - this.x / 4, this.x / 2 + this.x / 4), rand(this.y / 2 - this.y / 4, this.y / 2 + this.y / 4), this.z - 1), rand(0, BLOCKS.length));
+        let blockSize = block.getSize();
+        block.move(new Point(0, 0, -blockSize.z));
+        if (this.isInBounds(block)) {
+            this.addBlock(block)
+        }
     }
 }
 
