@@ -28,7 +28,7 @@
     // Initialize the scene
     initializeScene();
 
-    let tetrisBoard = new TetrisBoard(2, 2, 10);
+    let tetrisBoard = new TetrisBoard(6, 6, 10);
 
     setInterval(function () {
         tetrisBoard.advance();
@@ -69,7 +69,7 @@
         scene = new THREE.Scene();
 
         camera = new THREE.PerspectiveCamera(45, canvasWidth / canvasHeight, 1, 100);
-        camera.position.set(70, 25, 65);
+        camera.position.set(50, 50, 50);
         camera.lookAt(scene.position);
 
         scene.add(camera);
@@ -96,10 +96,15 @@
 
         scene.add(camera);
 
+        xes = {};
+        yes = {};
+
         tetrisBoard.getRawBlocks().forEach(function (blockDef) {
             blockDef.forEach(function (block) {
                 const cubeMesh = new THREE.Mesh(cubeGeometry, blockMaterial);
                 cubeMesh.position.set(block.x, block.z, block.y);
+                xes[block.x] = true
+                yes[block.y] = true
                 scene.add(cubeMesh);
             })
         });
@@ -112,7 +117,13 @@
 
         for (let i = 0; i < tetrisBoard.x; i++) {
             for (let j = 0; j < tetrisBoard.y; j++) {
-                const cubeMesh = new THREE.Mesh(cubeGeometry, floorMaterial);
+                let material;
+                if (xes[i] && yes[j]) {
+                    material = blockMaterial
+                } else {
+                    material = floorMaterial
+                }
+                const cubeMesh = new THREE.Mesh(cubeGeometry, material);
                 cubeMesh.position.set(i, -1, j);
                 scene.add(cubeMesh);
             }

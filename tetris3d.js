@@ -115,6 +115,7 @@ class TetrisBoard {
         this.z = z;
         this.buildBoard(x, y, z);
         this.blocks = []
+        this.points = 0
     }
 
     buildBoard(x, y, z) {
@@ -260,10 +261,13 @@ class TetrisBoard {
                     this.board[x][y][z] = this.board[x][y][z + 1];
                 }
         }
-        for (let x = 0; x < this.x; x++)
+        for (let x = 0; x < this.x; x++) {
             for (let y = 0; y < this.y; y++) {
                 this.board[x][y][this.z - 1] = STATE.EMPTY;
             }
+        }
+        this.points += 1;
+        console.log(this.points)
     }
 }
 
