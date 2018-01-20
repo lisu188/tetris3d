@@ -69,7 +69,7 @@
         scene = new THREE.Scene();
 
         camera = new THREE.PerspectiveCamera(45, canvasWidth / canvasHeight, 1, 100);
-        camera.position.set(50, 50, 50);
+        camera.position.set(25, 35, 25);
         camera.lookAt(scene.position);
 
         scene.add(camera);
@@ -103,8 +103,8 @@
             blockDef.forEach(function (block) {
                 const cubeMesh = new THREE.Mesh(cubeGeometry, blockMaterial);
                 cubeMesh.position.set(block.x, block.z, block.y);
-                xes[block.x] = true
-                yes[block.y] = true
+                xes[block.x] = true;
+                yes[block.y] = true;
                 scene.add(cubeMesh);
             })
         });
