@@ -14,6 +14,11 @@
     <script src="./tetris3d.js"></script>
 </head>
 <body>
+<div style="position:absolute;left: 30px;top:30px;color:white"><p style="color:white"> Aby poruszac klockami naciskaj klawisze </br>
+  W -- do przodu </br>
+  S -- do tylu</br>
+  A -- w lewo</br>
+  D -- w prawo</p></div>
 <div id="WebGLCanvas"></div>
 <script>
     // Global scene object
@@ -51,10 +56,10 @@
         document.addEventListener("keypress", function (event) {
             switch (String.fromCharCode(event.which || event.keyCode)) {
                 case 'w':
-                    tetrisBoard.move(0, 1, 0);
+                    tetrisBoard.move(0, -1, 0);
                     break;
                 case 's':
-                    tetrisBoard.move(0, -1, 0);
+                    tetrisBoard.move(0, 1, 0);
                     break;
                 case 'a':
                     tetrisBoard.move(-1, 0, 0);
@@ -81,8 +86,9 @@
 
         cubeGeometry = new THREE.BoxBufferGeometry(1, 1, 1);
 
-        blockMaterial = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true});
-        filledMaterial = new THREE.MeshBasicMaterial({color: 0x0000ff, wireframe: true});
+
+        blockMaterial = new THREE.MeshBasicMaterial({color: 0xff0000});
+        filledMaterial = new THREE.MeshBasicMaterial({color: 0x0000ff});
         floorMaterial = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true})
     }
 
