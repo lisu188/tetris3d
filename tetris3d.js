@@ -114,7 +114,7 @@ class TetrisBoard {
         this.y = y;
         this.z = z;
         this.buildBoard(x, y, z);
-        this.blocks = []
+        this.blocks = [];
         this.points = 0
     }
 
@@ -129,6 +129,10 @@ class TetrisBoard {
                 }
             }
         }
+    }
+
+    fastMove() {
+        while (!this.advance()) ;
     }
 
     move(x, y, z) {
@@ -239,7 +243,8 @@ class TetrisBoard {
             this.clearBottom()
         }
         if (this.blocks.length === 0) {
-            this.nextBlock()
+            this.nextBlock();
+            return true;
         }
     }
 
