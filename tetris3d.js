@@ -109,13 +109,14 @@ class Block {
 }
 
 class TetrisBoard {
-    constructor(x, y, z) {
+    constructor(x, y, z, gameOver) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.buildBoard(x, y, z);
         this.blocks = [];
-        this.points = 0
+        this.points = 0;
+        this.gameOver = gameOver
     }
 
     buildBoard(x, y, z) {
@@ -201,6 +202,20 @@ class TetrisBoard {
         return lowest
     }
 
+    getHighestPoint() {
+        let highest = new Point(-Infinity, -Infinity, -Infinity);
+        for (let i = 0; i < this.x; i++) {
+            for (let j = 0; j < this.y; j++) {
+                for (let k = 0; k < this.z; k++) {
+                    if (this.board[i][j][k] === STATE.FILLED && k > highest.z) {
+                        highest = new Point(i, j, k)
+                    }
+                }
+            }
+        }
+        return highest
+    }
+
     getFilled() {
         return this.getWithState(STATE.FILLED);
     }
@@ -215,6 +230,7 @@ class TetrisBoard {
 
     addBlock(block) {
         this.blocks.push(block)
+
     }
 
     shouldFreeze(blockDef) {
@@ -235,20 +251,27 @@ class TetrisBoard {
     }
 
     advance() {
-        this.blocks.forEach(function (block) {
-            block.loc = block.loc.plus(new Point(0, 0, -1));
-        });
-        this.freeze();
-        while (this.isBottomFilled()) {
-            this.clearBottom()
-        }
-        if (this.blocks.length === 0) {
-            this.nextBlock();
-            return true;
+        let z = this.getHighestPoint().z;
+        console.log(z);
+        if (z === this.z) {
+            this.gameOver()
+        } else {
+            this.blocks.forEach(function (block) {
+                block.loc = block.loc.plus(new Point(0, 0, -1));
+            });
+            this.freeze();
+            while (this.isBottomFilled()) {
+                this.clearBottom()
+            }
+            if (this.blocks.length === 0) {
+                this.nextBlock();
+                return true;
+            }
         }
     }
 
     nextBlock() {
+        let self = this;
         let block = new Block(new Point(rand(this.x / 2 - this.x / 4, this.x / 2 + this.x / 4),
             rand(this.y / 2 - this.y / 4, this.y / 2 + this.y / 4), this.z - 1),
             rand(0, BLOCKS.length));
@@ -272,7 +295,6 @@ class TetrisBoard {
             }
         }
         this.points += 1;
-        console.log(this.points)
     }
 }
 

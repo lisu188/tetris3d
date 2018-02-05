@@ -14,10 +14,11 @@
     <script src="./tetris3d.js"></script>
 </head>
 <body>
-<div style="position:absolute;left: 30px;top:30px;color:white"><p style="color:white"> Aby poruszac klockami naciskaj klawisze </br>
-  W -- do przodu </br>
-  S -- do tylu</br>
-  A -- w lewo</br>
+<div style="position:absolute;left: 30px;top:30px;color:white"><p style="color:white"> Aby poruszac klockami naciskaj
+    klawisze </br>
+    W -- do przodu </br>
+    S -- do tylu</br>
+    A -- w lewo</br>
     D -- w prawo</br>
     SPACJA -- opu?? blok na sam dó?</p></div>
 <div id="WebGLCanvas"></div>
@@ -33,10 +34,13 @@
 
     // Initialize the scene
     initializeScene();
+    let intervalHandle;
+    let tetrisBoard = new TetrisBoard(6, 6, 10, function () {
+        console.log("GAME OVER!!!");
+        clearInterval(intervalHandle)
+    });
 
-    let tetrisBoard = new TetrisBoard(6, 6, 10);
-
-    setInterval(function () {
+    intervalHandle = setInterval(function () {
         tetrisBoard.advance();
         render();
     }, 1000);
