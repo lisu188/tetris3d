@@ -35,9 +35,9 @@
     // Initialize the scene
     initializeScene();
     let intervalHandle;
-    let tetrisBoard = new TetrisBoard(6, 6, 10, function () {
-        console.log("GAME OVER!!!");
-        clearInterval(intervalHandle)
+    let tetrisBoard = new TetrisBoard(6, 6, 10, function (tetrisBoard) {
+        console.log(tetrisBoard.points);
+        tetrisBoard.clear()
     });
 
     intervalHandle = setInterval(function () {

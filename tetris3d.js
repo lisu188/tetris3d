@@ -9,6 +9,15 @@ Array.prototype.removeIf = function (callback) {
     }
 };
 
+Array.prototype.anyMatch = function (callback) {
+    let i = this.length;
+    while (i--) {
+        if (callback(this[i], i)) {
+            return true
+        }
+    }
+};
+
 
 function rand(x, y) {
     return Math.floor((Math.random() * (y - x)) + x);
@@ -113,10 +122,14 @@ class TetrisBoard {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.buildBoard(x, y, z);
+        this.gameOver = gameOver;
+        this.clear()
+    }
+
+    clear() {
+        this.buildBoard(this.x, this.y, this.z);
         this.blocks = [];
         this.points = 0;
-        this.gameOver = gameOver
     }
 
     buildBoard(x, y, z) {
@@ -152,6 +165,13 @@ class TetrisBoard {
         let anyLower = bounds.low.isAnyLower(new Point(0, 0, 0));
         let anyHigher = bounds.high.isAnyHigher(this.getSize());
         return !anyLower && !anyHigher;
+    }
+
+    isAnyFilled(block) {
+        let self = this;
+        return block.getPoints().anyMatch(function (block) {
+            return self.board[block.x][block.y][block.z] === STATE.FILLED
+        })
     }
 
     getSize() {
@@ -250,21 +270,22 @@ class TetrisBoard {
         });
     }
 
+    isTopped() {
+        return this.getHighestPoint().z === this.z - 1
+    }
+
     advance() {
-        let z = this.getHighestPoint().z;
-        console.log(z);
-        if (z === this.z) {
-            this.gameOver()
-        } else {
-            this.blocks.forEach(function (block) {
-                block.loc = block.loc.plus(new Point(0, 0, -1));
-            });
-            this.freeze();
-            while (this.isBottomFilled()) {
-                this.clearBottom()
-            }
-            if (this.blocks.length === 0) {
-                this.nextBlock();
+        this.blocks.forEach(function (block) {
+            block.loc = block.loc.plus(new Point(0, 0, -1));
+        });
+        this.freeze();
+        while (this.isBottomFilled()) {
+            this.clearBottom()
+        }
+        if (this.blocks.length === 0) {
+            if (!this.nextBlock() || this.isTopped()) {
+                this.gameOver(this)
+            } else {
                 return true;
             }
         }
@@ -277,9 +298,11 @@ class TetrisBoard {
             rand(0, BLOCKS.length));
         let blockSize = block.getSize();
         block.move(new Point(0, 0, -blockSize.z));
-        if (this.isInBounds(block)) {
-            this.addBlock(block)
+        if (this.isInBounds(block) && !this.isAnyFilled(block)) {
+            this.addBlock(block);
+            return true;
         }
+        return false;
     }
 
     clearBottom() {
