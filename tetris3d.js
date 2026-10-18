@@ -63,7 +63,7 @@ class Block {
     }
 
     getPoints() {
-        self = this;
+        let self = this;
         let rawPoints = [];
         BLOCKS[this.id].forEach(function (point) {
             rawPoints.push(self.loc.plus(point))
@@ -150,14 +150,22 @@ class TetrisBoard {
     }
 
     move(x, y, z) {
-        self = this;
+        let self = this;
         let moveDir = new Point(x, y, z);
         //TODO: move only lowest block
         this.blocks.forEach(function (block) {
-            if (self.isInBounds(block.getMoved(moveDir))) {
+            if (self.canPlace(block.getMoved(moveDir))) {
                 block.move(moveDir);
             }
         })
+    }
+
+    canPlace(block) {
+        const lowest = new Point(0, 0, 0);
+        const size = this.getSize();
+        return block.getPoints().every(point =>
+            !point.isAnyLower(lowest) && !point.isAnyHigher(size)
+            && this.getBlock(point) === STATE.EMPTY);
     }
 
     isInBounds(block) {
@@ -253,15 +261,14 @@ class TetrisBoard {
 
     }
 
-    shouldFreeze(blockDef) {
-        const lowestBlock = this.getLowestBlock(blockDef);
-        return lowestBlock.z === 0 || this.getBlock(lowestBlock.plus(new Point(0, 0, -1))) === STATE.FILLED;
+    shouldFreeze(block) {
+        return !this.canPlace(block.getMoved(new Point(0, 0, -1)));
     }
 
     freeze() {
         let self = this;
         this.blocks.removeIf(function (block) {
-            if (self.shouldFreeze(block.getPoints())) {
+            if (self.shouldFreeze(block)) {
                 block.getPoints().forEach(function (block) {
                     self.setBlock(block, STATE.FILLED)
                 });
@@ -275,19 +282,18 @@ class TetrisBoard {
     }
 
     advance() {
-        this.blocks.forEach(function (block) {
-            block.loc = block.loc.plus(new Point(0, 0, -1));
-        });
         this.freeze();
+        this.blocks.forEach(function (block) {
+            block.move(new Point(0, 0, -1));
+        });
         while (this.isBottomFilled()) {
             this.clearBottom()
         }
         if (this.blocks.length === 0) {
             if (!this.nextBlock() || this.isTopped()) {
                 this.gameOver(this)
-            } else {
-                return true;
             }
+            return true;
         }
     }
 
@@ -298,7 +304,7 @@ class TetrisBoard {
             rand(0, BLOCKS.length));
         let blockSize = block.getSize();
         block.move(new Point(0, 0, -blockSize.z));
-        if (this.isInBounds(block) && !this.isAnyFilled(block)) {
+        if (this.canPlace(block)) {
             this.addBlock(block);
             return true;
         }
