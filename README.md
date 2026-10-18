@@ -16,6 +16,18 @@ No build step is required. Open `index.html` in a browser.
 - `D` — move right
 - `Space` — drop the active block
 
+## Board regression tests
+
+With Node.js 24 installed, run the dependency-free board tests:
+
+```bash
+node --test tests/board.test.js
+```
+
+They check every occupied cube cell, board boundaries, lateral overlap, raised
+supports, gravity, floor landing, hard drop, blocked-spawn reset and layer clearing.
+The tests run the same board script as the demo without a renderer or DOM.
+
 ## Structure
 
 - `tetris3d.js` — board state and game mechanics
